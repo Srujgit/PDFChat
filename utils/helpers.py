@@ -3,7 +3,8 @@ from unstructured.partition.pdf import partition_pdf
 #import base64
 #import io
 #from PIL import Image
-#import streamlit as st To display tabels use streamlit run
+#import streamlit as st #To display tabels use streamlit run
+import markdownify
 
 
 
@@ -19,6 +20,7 @@ def parse_contents(files):
         texts, images, tables = _parse_contents(files)
     
     return texts, images, tables
+
 
 def _parse_contents(file):
     elements = partition_pdf(
@@ -47,8 +49,13 @@ def _parse_contents(file):
 
                 if "unstructured.documents.elements.Table" in str(type(data)): ## Appends all tables in HTML encoding
                     tables.append(data.metadata.text_as_html)
+    if len(tables)>0: 
+        for i in range(len(tables)):
+            tables[i] = _convert_html_to_markdown(tables[i])
     return texts, images, tables
 
+def _convert_html_to_markdown(table): ## Convert tables to markdown for easier processing
+    return markdownify.markdownify(table)
 
 
 if __name__ == "__main__":
@@ -67,3 +74,4 @@ if __name__ == "__main__":
     #for i in texts:
         #print(i)
     ## Texts parsed in the hi_res mode are not decoded properly
+    print(markdownify.markdownify(tables[0]))
